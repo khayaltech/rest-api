@@ -10,8 +10,6 @@ import java.util.Date;
 import java.util.List;
 
 @SpringBootApplication
-@RestController
-
 public class SimpleApiApplication {
 
     public static void main(String[] args) {

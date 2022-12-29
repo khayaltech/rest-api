@@ -1,24 +1,17 @@
 package com.example.simpleAPI.controller;
 
 import com.example.simpleAPI.model.Student;
-import com.example.simpleAPI.repository.StudentRepository;
 import com.example.simpleAPI.service.StudentService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping
+@RequiredArgsConstructor
 public class StudentController {
     private final StudentService studentService;
-    private final StudentRepository studentRepository;
-
-    public StudentController(StudentService studentService,
-                             StudentRepository studentRepository) {
-        this.studentService = studentService;
-        this.studentRepository = studentRepository;
-    }
 
 
     @GetMapping("/")
