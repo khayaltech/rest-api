@@ -1,9 +1,13 @@
 package com.example.simpleAPI.service.impl;
 
+import com.example.simpleAPI.dto.StudentCreateDTO;
+import com.example.simpleAPI.dto.StudentViewDTO;
+import com.example.simpleAPI.exceptions.NotFoundException;
 import com.example.simpleAPI.model.Student;
 import com.example.simpleAPI.repository.StudentRepository;
 import com.example.simpleAPI.service.StudentService;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,30 +15,38 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
+@RequiredArgsConstructor
 public class StudentServiceImpl implements StudentService {
 
     private final StudentRepository studentRepository;
 
-    @Autowired
-    public StudentServiceImpl(StudentRepository studentRepository) {
-        this.studentRepository = studentRepository;
-    }
-
     @Override
-    public List<Student> getStudents() {
-        return studentRepository.findAll();
-    }
+    public StudentViewDTO getStudentById(Long id) {
+        boolean exists = studentRepository.existsById(id);
 
-    @Override
-    public void addNewStudent(Student student) {
-        Optional<Student> optionalStudent = studentRepository.findStudentByEmail(student.getEmail());
-        if (optionalStudent.isPresent()) {
-            throw new IllegalStateException("email taken");
+        if (!exists) {
+            throw new NotFoundException("Not Found Exception");
         }
-        studentRepository.save(student);
+        Student student = studentRepository.findById(id).orElseThrow(() -> new NotFoundException("Not found exception"));
+
+        return StudentViewDTO.of(student);
+    }
+
+    @Override
+    public  List<StudentViewDTO> getStudents() {
+        return studentRepository.findAll().stream().map(StudentViewDTO::of).collect(Collectors.toList());
+    }
+
+    @Override
+    public StudentViewDTO addNewStudent(StudentCreateDTO studentCreateDTO) {
+
+        final Student student = studentRepository
+                .save(new Student(studentCreateDTO.getName(),studentCreateDTO.getEmail(),studentCreateDTO.getDob())) ;
+        return StudentViewDTO.of(student);
 
     }
 
@@ -43,7 +55,7 @@ public class StudentServiceImpl implements StudentService {
         boolean exists = studentRepository.existsById(id);
 
         if (!exists) {
-            throw new IllegalStateException("student with id" + id + "doesn't exist");
+            throw new NotFoundException("Not Found Exception");
         }
         studentRepository.deleteById(id);
     }
@@ -52,7 +64,7 @@ public class StudentServiceImpl implements StudentService {
     @Transactional
     @Override
     public void updateStudent(Long studentId, String name, String email) {
-        Student student = studentRepository.findById(studentId).orElseThrow(() -> new IllegalStateException("student with id" + studentId + "doesn't exist"));
+        Student student = studentRepository.findById(studentId).orElseThrow(() -> new NotFoundException("Not found exception"));
         if (name != null && name.length() > 0 && !Objects.equals(name, student.getName())) {
             student.setName(name);
         }
@@ -63,10 +75,9 @@ public class StudentServiceImpl implements StudentService {
 
             }
             student.setEmail(email);
-       }
+        }
         studentRepository.save(student);
-
-
     }
+
 }
 

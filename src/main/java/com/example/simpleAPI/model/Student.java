@@ -4,10 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.Date;
 
 @Data
 @Entity
@@ -25,7 +23,7 @@ public class Student {
     @Transient
     private int age;
 
-    public Student(String name, String email, LocalDate dob, int age) {
+    public Student(String name, String email, LocalDate dob) {
         this.name = name;
         this.email = email;
         this.dob = dob;
