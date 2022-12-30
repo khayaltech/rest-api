@@ -1,15 +1,15 @@
 package com.example.simpleAPI.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.Period;
-
-@Data
 @Entity
 @Table(name="students")
+@Getter
+@Setter
+@AllArgsConstructor
 @NoArgsConstructor
 public class Student {
 
